@@ -1,26 +1,33 @@
-// Import node_modules referencing the namespace
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-
-// Import our components referencing the location file
+import YTSearch from 'youtube-api-search';
 import SearchBar from './components/search_bar';
+import VideoList from './components/video_list';
 
-const API_KEY = 'AIzaSyC_PjBTl4txc9C_EWDjsz5otQvLRLW7smI';
+const API_KEY = 'AIzaSyC_PjBTl4txc9C_EWDjsz5otQvLRLW7smI'; // Youtube Search API Key
 
-// Create a new component. 
-// This component should create HTML code
+class App extends Component {
+    constructor(props) {
+        super(props);
 
-const App = () => { 
-    return (
-        <div>
-            <SearchBar />
-        </div>
-    );
-};
+        this.state = {videos : []};
 
+        // Make a request to search videos
+        YTSearch({key: API_KEY, term: 'reactJS'}, (videos) => {
+            this.setState({ videos }); // ES6 compact the asignation when the key and the values has the same name
+        });
+    }
 
-// React please, take this component generated with HTML and put it to the DOM
+    render() {
+        return (
+            <div>
+                <SearchBar />
+                <VideoList videos={this.state.videos} />
+            </div>
+        );
+    }
+}
+
 ReactDOM.render(
     <App />, document.querySelector('.container')
 );
-
