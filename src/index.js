@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import YTSearch from 'youtube-api-search';
@@ -16,8 +17,13 @@ class App extends Component {
             selectedVideo : null
         };
 
-        // Make a request to search videos
-        YTSearch({key: API_KEY, term: 'Zelda'}, (videos) => {
+        // Initial video search
+        this.videoSearch('ReactJS');
+    }
+
+    videoSearch(term) {        
+        // Make a request to Youtube API
+        YTSearch({key: API_KEY, term: term}, (videos) => {
             this.setState({ 
                 videos : videos,
                 selectedVideo : videos[0]
@@ -25,10 +31,15 @@ class App extends Component {
         });
     }
 
+
+
     render() {
+        // Generate a debouce function that execute once every 300 mseconds
+        const videoDebounceSearch = _.debounce((term) => { this.videoSearch(term) }, 300);
+
         return (
             <div>
-                <SearchBar />
+                <SearchBar onSearchTermChange={ videoDebounceSearch } />
                 <VideoDetail video={this.state.selectedVideo} />
                 <VideoList 
                     onVideoSelect={ selectedVideo => this.setState( {selectedVideo}) }
